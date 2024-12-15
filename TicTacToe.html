@@ -1,0 +1,144 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for smooth animation */
+    .cell {
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .cell:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center h-screen">
+  <div class="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-center text-white mb-6">Tik Tak Toe</h1>
+    <div id="startScreen" class="flex flex-col items-center justify-center">
+      <button id="startButton"
+        class="bg-green-500 hover:bg-green-600 text-white text-lg font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out">
+        Play Game
+      </button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+      <div class="grid grid-cols-3 gap-2 mb-6">
+        <!-- Game Board -->
+        <div id="cell-0" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-1" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-2" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-3" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-4" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-5" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-6" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-7" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+        <div id="cell-8" class="cell h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-3xl font-bold cursor-pointer hover:bg-gray-300 transition"></div>
+      </div>
+      <div class="flex justify-between items-center">
+        <p id="statusText" class="text-white text-lg font-semibold"></p>
+        <button id="restartButton"
+          class="hidden bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out">
+          Restart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const startScreen = document.getElementById("startScreen");
+      const gameScreen = document.getElementById("gameScreen");
+      const startButton = document.getElementById("startButton");
+      const restartButton = document.getElementById("restartButton");
+      const cells = document.querySelectorAll(".cell");
+      const statusText = document.getElementById("statusText");
+
+      const winningCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      let board = ["", "", "", "", "", "", "", "", ""];
+      let currentPlayer = "X";
+      let isGameActive = true;
+
+      const startGame = () => {
+        startScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+        updateStatus(`${currentPlayer}'s Turn`);
+      };
+
+      const restartGame = () => {
+        board = ["", "", "", "", "", "", "", "", ""];
+        currentPlayer = "X";
+        isGameActive = true;
+        cells.forEach((cell) => {
+          cell.textContent = "";
+          cell.classList.remove("text-blue-500", "text-red-500");
+        });
+        updateStatus(`${currentPlayer}'s Turn`);
+        restartButton.classList.add("hidden");
+      };
+
+      const updateStatus = (message) => {
+        statusText.textContent = message;
+      };
+
+      const checkWinner = () => {
+        for (let combo of winningCombos) {
+          const [a, b, c] = combo;
+          if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            isGameActive = false;
+            updateStatus(`Player ${currentPlayer} Wins!`);
+            restartButton.classList.remove("hidden");
+            return true;
+          }
+        }
+
+        if (!board.includes("")) {
+          isGameActive = false;
+          updateStatus("It's a Tie!");
+          restartButton.classList.remove("hidden");
+          return true;
+        }
+
+        return false;
+      };
+
+      const handleCellClick = (e) => {
+        const cell = e.target;
+        const cellIndex = Array.from(cells).indexOf(cell);
+
+        if (board[cellIndex] || !isGameActive) return;
+
+        board[cellIndex] = currentPlayer;
+        cell.textContent = currentPlayer;
+        cell.classList.add(currentPlayer === "X" ? "text-blue-500" : "text-red-500");
+
+        if (!checkWinner()) {
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+          updateStatus(`${currentPlayer}'s Turn`);
+        }
+      };
+
+      startButton.addEventListener("click", startGame);
+      restartButton.addEventListener("click", restartGame);
+      cells.forEach((cell) => cell.addEventListener("click", handleCellClick));
+    });
+  </script>
+</body>
+
+</html>
